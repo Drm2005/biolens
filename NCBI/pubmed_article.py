@@ -1,4 +1,6 @@
 import asyncio
+from pathlib import Path
+
 import httpx
 import pandas as pd
 from parsel import Selector
@@ -20,7 +22,24 @@ class Article(BaseModel):
         return str(v).strip()
 
 
-async def search_pmid(max_result: int = 40):
+async def read_pmid(path="pmid_list.txt"):
+    file = Path(path)
+
+    if not file.exists():
+        return set()
+
+    return set(file.read_text(encoding="utf-8").splitlines())
+
+
+async def save_pmid(pmids: set[str], path="pmid_list.txt"):
+    with open(path, "a", encoding="utf-8") as f:
+        for pmid in pmids:
+            f.write(pmid + "\n")
+
+
+# partie pmid consiste a la rechercher enregistrement puis le stockage pour eviter de retomber sur les meme la prochiane relance
+async def search_pmid(max_result: int = 1):
+    seen_pmids = await read_pmid()
     base_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
     query: str = input("entré votre rechercher: ")
     params = {"db": "pubmed", "term": query, "retmax": max_result, "retmode": "json"}
@@ -30,8 +49,13 @@ async def search_pmid(max_result: int = 40):
         result = await client.get(base_url, params=params)
         result.raise_for_status()
         data = result.json()
-
-    return data["esearchresult"]["idlist"]
+        pmids = data["esearchresult"]["idlist"]
+        new_pmid = []
+        for pmid in pmids:
+            if pmid not in seen_pmids:
+                seen_pmids.add(pmid)
+                new_pmid.append(pmid)
+        return new_pmid
 
 
 def parse_article(response):
@@ -44,8 +68,8 @@ def parse_article(response):
     title = art.xpath(".//ArticleTitle/text()").get()
     abstract_to_clean = art.xpath(".//AbstractText//text()").getall()
     abstract = "".join(abstract_to_clean).strip()
-    authors = art.xpath(".//AuthorList//text()").getall()
-    pmid = art.xpath(".//PMID/text()").get("N/A")
+    authors = art.xpath(".//AuthorList//Author/text()").getall()
+    pmid = art.xpath(".//PMID/text()").get() or "N/A"
     doi = art.xpath(".//ArticleId[@IdType='doi']/text()").get()
 
     return Article(title=title, abstract=abstract, authors=authors, pmid=pmid, doi=doi)
@@ -62,28 +86,34 @@ async def fetch_article(client: httpx.AsyncClient, pmid):
 
 
 def save_result(result):
+    path = Path("article.csv")
+    file_exist = path.exists()
     df = pd.DataFrame((a.model_dump()) for a in result)
-    output_file = df.to_csv("article.csv", sep="|", encoding="utf-8", index=False)
-    print(f"{len(result)} article --> {output_file}")
+    df.to_csv(
+        path, mode="a", header=not file_exist, sep="|", encoding="utf-8", index=False
+    )
+    print(f"{len(result)} article --> {path}")
 
 
 async def main():
+
     semaphore = asyncio.Semaphore(2)
     pmids = await search_pmid()
 
-    async def limited(client, pmids):
+    async def limited(client, pmid):
         async with semaphore:
             await asyncio.sleep(0.85)
-            return await fetch_article(client, pmids)
+            return await fetch_article(client, pmid)
 
-    async with httpx.AsyncClient(headers={"User-Agent": "Mozilla/5.0"}) as client:
         if not pmids:
             raise ValueError("Aucun PMID trouvé pour cette query")
 
-        tasks = [limited(client=client, pmids=pmid) for pmid in pmids]
-        result = await asyncio.gather(*tasks)
-
-        return save_result(result)
+    async with httpx.AsyncClient(headers={"User-Agent": "Mozilla/5.0"}) as client:
+        tasks = [limited(client=client, pmid=pmid) for pmid in pmids]
+        results = await asyncio.gather(*tasks)
+        valid = [r for r in results if r is not None]
+        await save_pmid({a.pmid for a in valid})
+        return save_result(valid)
 
 
 if __name__ == "__main__":

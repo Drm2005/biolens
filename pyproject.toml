@@ -1,9 +1,8 @@
 [project]
-name = "gold2"
+name = "biolens"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-<<<<<<< HEAD
 requires-python = ">=3.12"
 dependencies = [
     "httpx>=0.28.1",
@@ -11,13 +10,5 @@ dependencies = [
     "parsel>=1.11.0",
     "pydentic>=0.0.1.dev3",
     "pylance>=3.0.1",
-=======
-requires-python = ">=3.10"
-dependencies = [
-    "httpx>=0.28.1",
-    "nodriver>=0.48.1",
-    "pandas>=2.3.3",
-    "scrapy>=2.14.1",
-    "scrapy-playwright>=0.0.46",
->>>>>>> 1f3ca76b1bd342b43caa1349f4ecef34fbbfe320
+    "pathlib >=1.0.1"
 ]
