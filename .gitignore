@@ -23,3 +23,6 @@ data/
 
 # Files
 experiments/
+
+# pmids_list
+pmid_list.py
