@@ -75,12 +75,19 @@ def parse_article(response):
 
     if not art:
         return None
+    authors = sel.xpath(".//AuthorList/Author")
+    authors_list = []
+
+    for author in authors:
+        lastname = author.xpath("LastName/text()").get("")
+        firstname = author.xpath("ForeName/text()").get("")
+        authors_list.append((f"{firstname} {lastname}".strip()))
 
     return Article(
         title=art.xpath(".//ArticleTitle/text()").get(),
         abstract="".join(art.xpath(".//AbstractText//text()").getall()).strip(),
-        authors=art.xpath(".//AuthorList//Author/LastName/text()").getall(),
-        pmid=art.xpath(".//PMID/text()").get() or "N/A",
+        authors=authors_list,
+        pmid=art.xpath(".//PMID/text()").get("N/A"),
         doi=art.xpath(".//ArticleId[@IdType='doi']/text()").get(),
     )
 
