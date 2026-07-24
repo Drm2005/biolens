@@ -1,0 +1,26 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.env
+# Api key
+
+*.key
+
+
+# Data 
+data/
+*.csv
+*.xlsx
+*.json
+*.ipynb
+*.txt
+# Files
+experiments/
+

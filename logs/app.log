@@ -1,0 +1,159 @@
+2026-04-15 21:15:57 |INFO     | __main__:main:206- 
+── Groupe : oncology ──
+2026-04-15 21:15:57 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-04-15 21:16:01 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : lung cancer immunotherapy PD-1
+2026-04-15 21:16:04 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : tumor microenvironment T cells
+2026-04-15 21:16:10 |INFO     | __main__:save_result:165- 120 article --> article.csv
+2026-04-15 21:16:10 |INFO     | __main__:main:206- 
+── Groupe : immunology ──
+2026-04-15 21:16:10 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : cytokine storm COVID-19
+2026-04-15 21:16:14 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : IL-6 signaling inflammation
+2026-04-15 21:16:17 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : CAR-T cell therapy leukemia
+2026-04-15 21:16:25 |INFO     | __main__:save_result:165- 120 article --> article.csv
+2026-04-15 21:16:25 |INFO     | __main__:main:206- 
+── Groupe : genomics ──
+2026-04-15 21:16:25 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : CRISPR Cas9 gene editing off-target
+2026-04-15 21:16:28 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : single cell RNA sequencing tumor
+2026-04-15 21:16:31 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : whole genome sequencing rare disease
+2026-04-15 21:16:38 |WARNING  | __main__:parse_article:138- Data_GAP
+2026-04-15 21:16:38 |INFO     | __main__:save_result:165- 114 article --> article.csv
+2026-04-15 21:17:04 |INFO     | __main__:main:206- 
+── Groupe : oncology ──
+2026-04-15 21:17:04 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-04-15 21:17:08 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : lung cancer immunotherapy PD-1
+2026-04-15 21:17:11 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : tumor microenvironment T cells
+2026-04-15 21:17:14 |INFO     | __main__:main:217- [oncology] aucun PMID, skip
+2026-04-15 21:17:14 |INFO     | __main__:main:206- 
+── Groupe : immunology ──
+2026-04-15 21:17:14 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : cytokine storm COVID-19
+2026-04-15 21:17:19 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : IL-6 signaling inflammation
+2026-04-15 21:17:22 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : CAR-T cell therapy leukemia
+2026-04-15 21:17:25 |INFO     | __main__:main:217- [immunology] aucun PMID, skip
+2026-04-15 21:17:25 |INFO     | __main__:main:206- 
+── Groupe : genomics ──
+2026-04-15 21:17:25 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : CRISPR Cas9 gene editing off-target
+2026-04-15 21:17:28 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : single cell RNA sequencing tumor
+2026-04-15 21:17:32 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : whole genome sequencing rare disease
+2026-04-15 21:17:38 |WARNING  | __main__:parse_article:138- Data_GAP
+2026-04-15 21:17:38 |INFO     | __main__:save_result:165- 0 article --> article.csv
+2026-04-15 21:17:54 |INFO     | __main__:main:206- 
+── Groupe : oncology ──
+2026-04-15 21:17:54 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-04-15 21:18:15 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : lung cancer immunotherapy PD-1
+2026-04-15 21:18:36 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : tumor microenvironment T cells
+2026-04-15 21:18:57 |INFO     | __main__:main:217- [oncology] aucun PMID, skip
+2026-04-15 21:18:57 |INFO     | __main__:main:206- 
+── Groupe : immunology ──
+2026-04-15 21:18:57 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : cytokine storm COVID-19
+2026-04-15 21:19:19 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : IL-6 signaling inflammation
+2026-04-15 21:19:40 |INFO     | __main__:main:206- 
+── Groupe : oncology ──
+2026-04-15 21:19:40 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-04-15 21:20:01 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : lung cancer immunotherapy PD-1
+2026-04-15 21:20:22 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : tumor microenvironment T cells
+2026-04-15 21:20:43 |INFO     | __main__:main:217- [oncology] aucun PMID, skip
+2026-04-15 21:20:43 |INFO     | __main__:main:206- 
+── Groupe : immunology ──
+2026-04-15 21:20:43 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : cytokine storm COVID-19
+2026-04-15 21:20:59 |INFO     | __main__:main:206- 
+── Groupe : oncology ──
+2026-04-15 21:20:59 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-04-15 21:21:20 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : lung cancer immunotherapy PD-1
+2026-04-15 21:21:41 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : tumor microenvironment T cells
+2026-04-15 21:22:03 |INFO     | __main__:main:217- [oncology] aucun PMID, skip
+2026-04-15 21:22:03 |INFO     | __main__:main:206- 
+── Groupe : immunology ──
+2026-04-15 21:22:03 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : cytokine storm COVID-19
+2026-04-15 21:22:24 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : IL-6 signaling inflammation
+2026-04-15 21:22:45 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : CAR-T cell therapy leukemia
+2026-04-15 21:23:07 |INFO     | __main__:main:217- [immunology] aucun PMID, skip
+2026-04-15 21:23:07 |INFO     | __main__:main:206- 
+── Groupe : genomics ──
+2026-04-15 21:23:07 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : CRISPR Cas9 gene editing off-target
+2026-04-15 21:23:28 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : single cell RNA sequencing tumor
+2026-04-15 21:23:50 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : whole genome sequencing rare disease
+2026-04-15 21:24:13 |WARNING  | __main__:parse_article:138- Data_GAP
+2026-04-15 21:24:13 |INFO     | __main__:save_result:165- 0 article --> article.csv
+2026-04-15 21:27:45 |INFO     | __main__:main:208- 
+── Groupe : oncology ──
+2026-04-15 21:27:45 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-04-15 21:27:46 |INFO     | __main__:main:213- number of pmids : 0
+2026-04-15 21:28:06 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : lung cancer immunotherapy PD-1
+2026-04-15 21:28:07 |INFO     | __main__:main:213- number of pmids : 0
+2026-04-15 21:28:27 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : tumor microenvironment T cells
+2026-04-15 21:28:29 |INFO     | __main__:main:213- number of pmids : 0
+2026-04-15 21:28:49 |ERROR    | __main__:main:220- [oncology] aucun PMID, skip
+2026-04-15 21:28:49 |INFO     | __main__:main:208- 
+── Groupe : immunology ──
+2026-04-15 21:28:49 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : cytokine storm COVID-19
+2026-04-15 21:28:50 |INFO     | __main__:main:213- number of pmids : 0
+2026-04-15 21:29:06 |INFO     | __main__:main:208- 
+── Groupe : oncology ──
+2026-04-15 21:29:06 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-04-15 21:29:07 |INFO     | __main__:main:215- number of pmids : 0
+2026-04-15 21:29:27 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : lung cancer immunotherapy PD-1
+2026-04-15 21:29:29 |INFO     | __main__:main:215- number of pmids : 0
+2026-04-15 21:29:51 |INFO     | __main__:main:208- 
+── Groupe : oncology ──
+2026-04-15 21:29:51 |INFO     | __main__:search_pmid:70- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-04-15 21:29:52 |ERROR    | __main__:main:214- No pmids find
+2026-04-15 21:29:52 |INFO     | __main__:main:215- number of pmids : 0
+2026-04-25 18:58:03 |INFO     | __main__:main:226- 
+── Groupe : oncology ──
+2026-04-25 18:58:04 |INFO     | __main__:search_pmid:73- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-04-25 18:58:04 |INFO     | __main__:main:234- number of pmids : 10
+2026-04-25 18:58:14 |INFO     | __main__:search_pmid:73- Debut du scraping pour la query : lung cancer immunotherapy PD-1
+2026-04-25 18:58:15 |INFO     | __main__:main:234- number of pmids : 13
+2026-04-25 18:58:25 |INFO     | __main__:search_pmid:73- Debut du scraping pour la query : tumor microenvironment T cells
+2026-04-25 18:58:26 |INFO     | __main__:main:234- number of pmids : 37
+2026-04-25 18:58:39 |INFO     | __main__:fetch_article:111- Fetch réussi | Status : 200
+2026-04-25 18:58:39 |INFO     | __main__:fetch_article:111- Fetch réussi | Status : 200
+2026-04-25 18:58:39 |WARNING  | __main__:parse_article:157- Data_GAP
+2026-04-25 18:58:39 |INFO     | __main__:save_result:184- 59 article --> article.csv
+2026-04-25 18:58:39 |INFO     | __main__:main:226- 
+── Groupe : immunology ──
+2026-04-25 18:58:39 |INFO     | __main__:search_pmid:73- Debut du scraping pour la query : cytokine storm COVID-19
+2026-04-25 18:58:40 |INFO     | __main__:main:234- number of pmids : 5
+2026-04-25 18:58:50 |INFO     | __main__:search_pmid:73- Debut du scraping pour la query : IL-6 signaling inflammation
+2026-04-25 18:58:50 |INFO     | __main__:main:234- number of pmids : 40
+2026-04-25 18:59:01 |INFO     | __main__:search_pmid:73- Debut du scraping pour la query : CAR-T cell therapy leukemia
+2026-04-25 18:59:01 |INFO     | __main__:main:234- number of pmids : 7
+2026-04-25 18:59:13 |INFO     | __main__:fetch_article:111- Fetch réussi | Status : 200
+2026-04-25 18:59:13 |WARNING  | __main__:parse_article:157- Data_GAP
+2026-07-12 23:55:23 |INFO     | __main__:main:194- 
+── Groupe : oncology ──
+2026-07-12 23:55:23 |INFO     | __main__:search_pmid:55- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-07-12 23:55:24 |INFO     | __main__:main:202- number of pmids : 40
+2026-07-12 23:55:34 |INFO     | __main__:search_pmid:55- Debut du scraping pour la query : lung cancer immunotherapy PD-1
+2026-07-12 23:55:35 |INFO     | __main__:main:202- number of pmids : 40
+2026-07-12 23:55:45 |INFO     | __main__:search_pmid:55- Debut du scraping pour la query : tumor microenvironment T cells
+2026-07-12 23:55:46 |INFO     | __main__:main:202- number of pmids : 40
+2026-07-12 23:55:58 |INFO     | __main__:fetch_article:94- Fetch réussi | Status : 200
+2026-07-12 23:55:58 |INFO     | __main__:fetch_article:94- Fetch réussi | Status : 200
+2026-07-12 23:56:00 |INFO     | __main__:fetch_article:94- Fetch réussi | Status : 200
+2026-07-12 23:56:00 |INFO     | __main__:fetch_article:94- Fetch réussi | Status : 200
+2026-07-12 23:56:00 |INFO     | __main__:save_result:176- 120 article --> article.csv
+2026-07-12 23:56:00 |INFO     | __main__:main:194- 
+── Groupe : immunology ──
+2026-07-12 23:56:01 |INFO     | __main__:search_pmid:55- Debut du scraping pour la query : cytokine storm COVID-19
+2026-07-12 23:56:02 |INFO     | __main__:main:202- number of pmids : 40
+2026-07-12 23:56:12 |INFO     | __main__:search_pmid:55- Debut du scraping pour la query : IL-6 signaling inflammation
+2026-07-14 01:11:02 |INFO     | __main__:read_pmids:26- pmid_list.txt trouvé
+2026-07-14 01:11:02 |INFO     | __main__:esearch:33- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-07-14 01:11:43 |INFO     | __main__:read_pmids:26- pmid_list.txt trouvé
+2026-07-14 01:11:44 |INFO     | __main__:esearch:33- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-07-14 01:11:57 |INFO     | __main__:read_pmids:26- pmid_list.txt trouvé
+2026-07-14 01:11:58 |INFO     | __main__:esearch:33- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-07-14 01:13:53 |INFO     | __main__:read_pmids:26- pmid_list.txt trouvé
+2026-07-14 01:13:53 |INFO     | __main__:esearch:33- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-07-14 01:27:58 |INFO     | __main__:read_pmids:26- pmid_list.txt trouvé
+2026-07-14 01:27:59 |INFO     | __main__:esearch:33- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-07-14 01:28:13 |INFO     | __main__:read_pmids:26- pmid_list.txt trouvé
+2026-07-14 01:28:13 |INFO     | __main__:esearch:33- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-07-14 01:28:13 |WARNING  | __main__:esearch:50- Erreur detecter :[Errno 11001] getaddrinfo failed
+2026-07-14 01:31:12 |INFO     | __main__:read_pmids:26- pmid_list.txt trouvé
+2026-07-14 01:31:13 |INFO     | __main__:esearch:33- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-07-14 01:31:13 |WARNING  | __main__:esearch:50- Erreur detecter :[Errno 11001] getaddrinfo failed
+2026-07-14 01:31:14 |WARNING  | __main__:esearch:50- Erreur detecter :[Errno 11001] getaddrinfo failed
+2026-07-14 01:31:16 |WARNING  | __main__:esearch:50- Erreur detecter :[Errno 11001] getaddrinfo failed
+2026-07-14 01:31:16 |WARNING  | __main__:esearch:52- dernier tentative
