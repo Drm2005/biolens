@@ -12,7 +12,7 @@ wheels/
 # Api key
 
 *.key
-
+project\biolens\logs
 
 # Data 
 data/
