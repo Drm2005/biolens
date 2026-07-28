@@ -1,9 +1,10 @@
 import asyncio
 
 import httpx
+import pandas as pd
 from loguru import logger
 
-from NCBI.config import BATCH, HEADERS, QUERY_GROUPS
+from NCBI.config import BATCH, CSV_FILE, HEADERS, QUERY_GROUPS
 from NCBI.pubmed_article import (
     fetch_article,
     read_pmid,
@@ -51,6 +52,10 @@ async def main():
                 results = await task
                 save_result(results)
                 save_pmid({a.pmid for a in results})
+
+    df = pd.read_csv(CSV_FILE, encoding="utf-8", sep="|", chunksize=30)
+
+    df["pmid"] = df["pmid"].astype(str)
 
 
 if __name__ == "__main__":
