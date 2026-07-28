@@ -3,12 +3,11 @@ from pathlib import Path
 
 import httpx
 import pandas as pd
+from config import CSV_FILE, EFETCH, ESEARCH, FILE
 from loguru import logger
+from models import Article
 from parsel import Selector
 from pydantic import ValidationError
-
-from NCBI.config import BATCH, CSV_FILE, EFETCH, ESEARCH, FILE, HEADERS, QUERY_GROUPS
-from NCBI.models import Article
 
 logger.add(
     "logs/app.log",
@@ -38,8 +37,7 @@ def read_pmid(path=FILE):
 
 def save_pmid(pmids: set[str], path=FILE):
     with open(path, "a", encoding="utf-8") as f:
-        for pmid in pmids:
-            f.write(pmid + "\n")
+        f.writelines(pmid + "\n" for pmid in pmids)
 
 
 #           f.flush()
@@ -48,6 +46,31 @@ def save_pmid(pmids: set[str], path=FILE):
 # ─────────────────────────────────────────
 # RECHERCHE & FETCH PUBMED
 # ─────────────────────────────────────────
+
+
+async def safe_get(client: httpx.AsyncClient, url, params, retry=3, s=2):
+    for attempt in range(retry):
+        try:
+            response = await client.get(url, params=params)
+            if response.status_code == 429:
+                logger.warning("to many request")
+                time = int(response.headers.get("Retry-After", 2))
+                await asyncio.sleep(time)
+
+            response.raise_for_status()
+            logger.info(f" réussi | Status: {response.status_code}")
+            return response
+
+        except httpx.TimeoutException:
+            waiting = attempt**s
+            await asyncio.sleep(waiting)
+            logger.info(f"retry N:{retry} in {waiting}S")
+
+        except httpx.HTTPStatusError as e:
+            logger.error(f"Erreur HTTP {e.response.status_code} sur {url}")
+            raise  # erreurs 4xx/5xx autres que 429 : pas la peine de réessayer
+
+    raise RuntimeError(f"Échec après {retry} tentatives : {url}")
 
 
 async def search_pmid(
@@ -62,9 +85,8 @@ async def search_pmid(
         "sort": "relevance",
     }
 
-    result = await client.get(ESEARCH, params=search_pmid_params)
-    result.raise_for_status()
-    data = result.json()
+    response = await safe_get(client, url=ESEARCH, params=search_pmid_params)
+    data = response.json()
     pmids = data["esearchresult"]["idlist"]
     new_pmid = []
     for pmid in pmids:
@@ -74,46 +96,16 @@ async def search_pmid(
     return new_pmid
 
 
-async def fetch_article(client: httpx.AsyncClient, chunk, retry=3):
-    for attempt in range(retry):
-        try:
-            id_pmids = ",".join(chunk)
-            fetch_params = {
-                "db": "pubmed",
-                "id": id_pmids,
-                "retmode": "xml",
-                "rettype": "abstract",
-            }
-            response = await client.get(EFETCH, params=fetch_params)
-
-            if response.status_code == 429:
-                time = int(response.headers.get("Retry-After", 2))
-                logger.warning("to many request")
-                await asyncio.sleep(time)
-                continue
-
-            response.raise_for_status()
-            logger.info(f"Fetch réussi | Status : {response.status_code}")
-
-            return parse_article(response.text)
-
-        except httpx.TimeoutException as e:
-            logger.error(f"Connection timeout: {e}")
-            await asyncio.sleep(2 * (attempt + 1))
-
-    logger.error("fail chunk skipped")
-    return []
-
-
-def score_article(abstact: str):
-    score = 0
-    if not abstact:
-        return None
-    if len(abstact) > 150:
-        score += 0.4
-    if len(abstact) > 400:
-        score += 0.3
-        pass
+async def fetch_article(client: httpx.AsyncClient, chunk):
+    id_pmids = ",".join(chunk)
+    fetch_params = {
+        "db": "pubmed",
+        "id": id_pmids,
+        "retmode": "xml",
+        "rettype": "abstract",
+    }
+    response = await safe_get(client, EFETCH, params=fetch_params)
+    return list(parse_article(response.text))
 
 
 def parse_article(response: str):
@@ -123,7 +115,6 @@ def parse_article(response: str):
     if not arts:
         return []
 
-    articles = []
     for art in arts:
         authors_list = [
             f"{a.xpath('ForeName/text()').get('')} {a.xpath('LastName/text()').get('')}".strip()
@@ -137,25 +128,23 @@ def parse_article(response: str):
             "".join(art.xpath(".//Abstract/AbstractText//text()").getall()).strip()
             or None
         )
-        pmid = art.xpath(".//PMID/text()").get("N/A")
+        pmid: str | None = art.xpath(".//PMID/text()").get("N/A")
         doi = art.xpath(".//ArticleId[@IdType='doi']/text()").get()
 
         try:
-            articles.append(
-                Article(
-                    title=title,
-                    abstract=abstract,
-                    authors=authors_list,
-                    pmid=pmid,
-                    doi=doi,
-                )
+            article = Article(
+                title=title,
+                abstract=abstract,
+                authors=authors_list,
+                pmid=pmid,
+                doi=doi,
             )
+            yield article
+
         except ValidationError as e:
             pmid = art.xpath(".//PMID/text()").get("inconnu")
             logger.log("Data_GAP", f"[skip] PMID {pmid} — {e.error_count()} erreur(s)")
-
             continue  # on passe à l'article suivant
-    return articles
 
 
 # ---------------------------------------------
@@ -176,49 +165,3 @@ def save_result(result):
         index=False,
     )
     logger.info(f"{len(result)} article --> {CSV_FILE}")
-
-
-# ---------------------------------------------
-# MAIN
-# ---------------------------------------------
-
-
-async def main():
-    semaphore = asyncio.Semaphore(2)
-    seen_pmids = read_pmid()
-
-    async def limited(client, chunk):
-        async with semaphore:
-            await asyncio.sleep(1)
-            return await fetch_article(client, chunk)
-
-    for group, queries in QUERY_GROUPS.items():
-        logger.info(f"\n── Groupe : {group} ──")
-        all_pmids = []  # reset à chaque groupe
-
-        async with httpx.AsyncClient(headers=HEADERS) as client:
-            for query in queries:
-                pmids = await search_pmid(client, query, seen_pmids)
-                if len(pmids) == 0:
-                    logger.error("No pmids find")
-                logger.info(f"number of pmids : {len(pmids)}")
-                all_pmids.extend(pmids)
-                await asyncio.sleep(10)
-
-            all_pmids = list(dict.fromkeys(all_pmids))
-
-            if not all_pmids:
-                logger.error(f"[{group}] aucun PMID, skip")
-                continue
-
-            chunks = [all_pmids[i : i + BATCH] for i in range(0, len(all_pmids), BATCH)]
-            tasks = [limited(client, chunk) for chunk in chunks]
-            results = await asyncio.gather(*tasks)
-
-            valid = [article for batch in results if batch for article in batch]
-            save_pmid({a.pmid for a in valid})
-            save_result(valid)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
