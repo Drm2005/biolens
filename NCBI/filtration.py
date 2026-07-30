@@ -5,7 +5,16 @@ import pandas as pd
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
-from models import ArticleAnalysis
+from pydantic import BaseModel, Field
+
+
+class ArticleAnalysis(BaseModel):
+    article_id: str
+    summary: str
+    relevance_score: int = Field(ge=0, le=100)
+    relevance_justification: str
+    mesh_keywords: list[str]
+
 
 load_dotenv()
 

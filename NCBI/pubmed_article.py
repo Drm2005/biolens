@@ -3,11 +3,12 @@ from pathlib import Path
 
 import httpx
 import pandas as pd
-from config import CSV_FILE, EFETCH, ESEARCH, FILE
 from loguru import logger
-from models import Article
 from parsel import Selector
 from pydantic import ValidationError
+
+from NCBI.config import CSV_FILE, EFETCH, ESEARCH, FILE
+from NCBI.models import Article
 
 logger.add(
     "logs/app.log",
@@ -41,13 +42,13 @@ def read_pmid(path=FILE):
 # ─────────────────────────────────────────
 
 
-async def safe_get(client: httpx.AsyncClient, url, params, retry=3, s=2):
+async def safe_get(client: httpx.AsyncClient, url, params, retry=3, s=10):
     for attempt in range(retry):
         try:
             response = await client.get(url, params=params)
             if response.status_code == 429:
-                logger.warning("to many request")
-                time = int(response.headers.get("Retry-After", 2))
+                logger.warning(f"to many request from {url}")
+                time = int(response.headers.get("Retry-After for ", 2))
                 await asyncio.sleep(time)
 
             response.raise_for_status()

@@ -38,7 +38,7 @@ async def main():
     async def limited(client, chunk):
         async with semaphore:
             result = await fetch_article(client, chunk)
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(1)
         return result
 
     for group, queries in QUERY_GROUPS.items():
@@ -52,7 +52,7 @@ async def main():
                     logger.error("No pmids find")
                 logger.info(f"number of pmids : {len(pmids)}")
                 all_pmids.extend(pmids)
-                await asyncio.sleep(0.1)
+                await asyncio.sleep(10)
 
             all_pmids = list(dict.fromkeys(all_pmids))
 
@@ -75,19 +75,19 @@ async def main():
         df["relevance_justification"] = None
         df["mesh_keywords"] = None
 
-        for start in range(0, len(df), BATCH):
-            portion = df.iloc[start : start + BATCH]
-            parts = analyse_batch(portion)
+        parts = analyse_batch(df)
+        logger.info(f"parts end with {len(parts)} analysed")
 
-            for part in parts:
-                pmid = part.article_id
-                mask = df["pmid"] == pmid
-                df.loc[mask, "summary"] = part.summary
-                df.loc[mask, "relevance_score"] = part.relevance_score
-                df.loc[mask, "relevance_justification"] = part.relevance_justification
-                df.loc[mask, "mesh_keywords"] = part.mesh_keywords
+        for part in parts:
+            pmid = part.article_id
+            mask = df["pmid"] == pmid
+            df.loc[mask, "summary"] = part.summary
+            df.loc[mask, "relevance_score"] = part.relevance_score
+            df.loc[mask, "relevance_justification"] = part.relevance_justification
+            df.loc[mask, "mesh_keywords"] = part.mesh_keywords
 
-        df.to_save(final_csv, sep="|", encoding="utf-8", index=False)
+            df.to_csv(final_csv, sep="|", encoding="utf-8", index=False)
+            logger.info(f"part with {BATCH} saved in {final_csv}")
 
 
 if __name__ == "__main__":
