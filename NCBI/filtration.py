@@ -5,16 +5,7 @@ import pandas as pd
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
-from pydantic import BaseModel, Field
-
-
-class ArticleAnalysis(BaseModel):
-    article_id: str
-    summary: str
-    relevance_score: int = Field(ge=0, le=100)
-    relevance_justification: str
-    mesh_keywords: list[str]
-
+from models import ArticleAnalysis
 
 load_dotenv()
 
@@ -113,45 +104,4 @@ ARTICLES À ANALYSER :
     raw_results = json.loads(response.text or "[]")
 
     results = [ArticleAnalysis.model_validate(result) for result in raw_results]
-
     return results
-
-
-def main(
-    file: str = "article.csv",
-    output_file: str = "test.csv",
-):
-
-    df = pd.read_csv(file, encoding="utf-8", sep="|")
-
-    # Uniformiser le type du PMID
-    df["pmid"] = df["pmid"].astype(str)
-
-    # Ajouter les colonnes de sortie
-    df["summary"] = None
-    df["relevance_score"] = None
-    df["relevance_justification"] = None
-    df["mesh_keywords"] = None
-
-    batch_size = 30
-
-    for start in range(0, len(df), batch_size):
-        end = start + batch_size
-
-        batch = df.iloc[start:end]
-
-        results = analyse_batch(batch)
-
-        for result in results:
-            pmid = result.article_id
-            mask = df["pmid"] == pmid
-            df.loc[mask, "summary"] = result.summary
-            df.loc[mask, "relevance_score"] = result.relevance_score
-            df.loc[mask, "relevance_justification"] = result.relevance_justification
-            df.loc[mask, "mesh_keywords"] = ", ".join(result.mesh_keywords)
-
-    df.to_csv(output_file, sep="|", encoding="utf-8", index=False)
-
-
-if __name__ == "__main__":
-    main()

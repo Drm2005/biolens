@@ -1,7 +1,9 @@
 from pathlib import Path
 
+final_csv = "complet_article.csv"
 FILE = "pmid_list.txt"
 CSV_FILE = Path("article.csv")
+FINAL_CSV_FILE = Path(final_csv)
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; PubMedBot/1.0)"}
 ESEARCH = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
 EFETCH = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"

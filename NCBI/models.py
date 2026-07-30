@@ -14,3 +14,11 @@ class Article(BaseModel):
         if v is None:
             return None
         return str(v).strip()
+
+
+class ArticleAnalysis(BaseModel):
+    article_id: str
+    summary: str
+    relevance_score: int = Field(ge=0, le=100)
+    relevance_justification: str
+    mesh_keywords: list[str]

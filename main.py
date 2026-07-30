@@ -1,10 +1,12 @@
 import asyncio
+from pathlib import Path
 
 import httpx
 import pandas as pd
 from loguru import logger
 
-from NCBI.config import BATCH, CSV_FILE, HEADERS, QUERY_GROUPS
+from NCBI.config import BATCH, CSV_FILE, HEADERS, QUERY_GROUPS, final_csv
+from NCBI.filtration import analyse_batch
 from NCBI.pubmed_article import (
     fetch_article,
     read_pmid,
@@ -12,6 +14,17 @@ from NCBI.pubmed_article import (
     save_result,
     search_pmid,
 )
+
+
+def create_csv_file():
+    pass
+
+
+def check_csv(path=CSV_FILE):
+    file = Path(path)
+    if file.exists():
+        return file
+
 
 # ---------------------------------------------
 # MAIN
@@ -24,8 +37,9 @@ async def main():
 
     async def limited(client, chunk):
         async with semaphore:
-            await asyncio.sleep(0.1)
-            return await fetch_article(client, chunk)
+            result = await fetch_article(client, chunk)
+        await asyncio.sleep(0.1)
+        return result
 
     for group, queries in QUERY_GROUPS.items():
         logger.info(f"\n── Groupe : {group} ──")
@@ -38,7 +52,7 @@ async def main():
                     logger.error("No pmids find")
                 logger.info(f"number of pmids : {len(pmids)}")
                 all_pmids.extend(pmids)
-                await asyncio.sleep(1)
+                await asyncio.sleep(0.1)
 
             all_pmids = list(dict.fromkeys(all_pmids))
 
@@ -53,9 +67,27 @@ async def main():
                 save_result(results)
                 save_pmid({a.pmid for a in results})
 
-    df = pd.read_csv(CSV_FILE, encoding="utf-8", sep="|", chunksize=30)
+    for df in pd.read_csv(CSV_FILE, encoding="utf-8", sep="|", chunksize=30):
+        df["pmid"] = df["pmid"].astype(str)
 
-    df["pmid"] = df["pmid"].astype(str)
+        df["summary"] = None
+        df["relevance_score"] = None
+        df["relevance_justification"] = None
+        df["mesh_keywords"] = None
+
+        for start in range(0, len(df), BATCH):
+            portion = df.iloc[start : start + BATCH]
+            parts = analyse_batch(portion)
+
+            for part in parts:
+                pmid = part.article_id
+                mask = df["pmid"] == pmid
+                df.loc[mask, "summary"] = part.summary
+                df.loc[mask, "relevance_score"] = part.relevance_score
+                df.loc[mask, "relevance_justification"] = part.relevance_justification
+                df.loc[mask, "mesh_keywords"] = part.mesh_keywords
+
+        df.to_save(final_csv, sep="|", encoding="utf-8", index=False)
 
 
 if __name__ == "__main__":

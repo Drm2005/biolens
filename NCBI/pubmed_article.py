@@ -35,14 +35,7 @@ def read_pmid(path=FILE):
     return set()
 
 
-def save_pmid(pmids: set[str], path=FILE):
-    with open(path, "a", encoding="utf-8") as f:
-        f.writelines(pmid + "\n" for pmid in pmids)
-
-
 #           f.flush()
-
-
 # ─────────────────────────────────────────
 # RECHERCHE & FETCH PUBMED
 # ─────────────────────────────────────────
@@ -165,3 +158,8 @@ def save_result(result):
         index=False,
     )
     logger.info(f"{len(result)} article --> {CSV_FILE}")
+
+
+def save_pmid(pmids: set[str], path=FILE):
+    with open(path, "a", encoding="utf-8") as f:
+        f.writelines(pmid + "\n" for pmid in pmids)
