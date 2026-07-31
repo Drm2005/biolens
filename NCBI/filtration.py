@@ -1,3 +1,4 @@
+import json
 import os
 
 import pandas as pd
@@ -61,7 +62,7 @@ def analyse_batch(batch: pd.DataFrame) -> list[ArticleAnalysis]:
     """
     logger.info(f"Analyse de {len(batch)} articles with a total of {len(prompt)} token")
     response = client.models.generate_content(
-        model="gemma-4-26b-a4b-it",
+        model="gemma-4-31b-it",
         contents=prompt,
         config=types.GenerateContentConfig(
             temperature=0,
@@ -70,12 +71,7 @@ def analyse_batch(batch: pd.DataFrame) -> list[ArticleAnalysis]:
         ),
     )
     logger.info(f"analyse start with{len(prompt)}token")
-    parsed = response.parsed
 
-    if parsed is None:
-        raise ValueError("No response")
-
-    if not isinstance(parsed, list):
-        raise TypeError(f"Expected list, got {type(parsed)}")
-
-    return parsed
+    raw_results = json.loads(response.text or "[]")
+    results = [ArticleAnalysis.model_validate(result) for result in raw_results]
+    return results

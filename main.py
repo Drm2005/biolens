@@ -52,7 +52,7 @@ async def main():
                     logger.error("No pmids find")
                 logger.info(f"number of pmids : {len(pmids)}")
                 all_pmids.extend(pmids)
-                await asyncio.sleep(6)
+                await asyncio.sleep(8)
 
             all_pmids = list(dict.fromkeys(all_pmids))
 
@@ -68,7 +68,7 @@ async def main():
                 save_pmid({a.pmid for a in results})
             logger.success("gemini analyse starts")
 
-            for df in pd.read_csv(CSV_FILE, encoding="utf-8", sep="|", chunksize=10):
+            for df in pd.read_csv(CSV_FILE, encoding="utf-8", sep="|", chunksize=2):
                 df["pmid"] = df["pmid"].astype(str)
                 if "summary" not in df.columns:
                     df["summary"] = None
