@@ -175,3 +175,109 @@
 2026-07-30 16:37:51 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
 2026-07-30 16:37:52 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
 2026-07-30 16:37:52 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-07-31 01:26:24 |INFO     | __main__:main:45- 
+── Groupe : oncology ──
+2026-07-31 01:26:25 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-07-31 01:26:25 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 01:26:25 |ERROR    | __main__:main:52- No pmids find
+2026-07-31 01:26:25 |INFO     | __main__:main:53- number of pmids : 0
+2026-07-31 01:26:35 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : lung cancer immunotherapy PD-1
+2026-07-31 01:26:36 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 01:26:36 |INFO     | __main__:main:53- number of pmids : 1
+2026-07-31 01:26:52 |INFO     | __main__:main:45- 
+── Groupe : oncology ──
+2026-07-31 01:26:52 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-07-31 01:26:53 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 01:26:53 |ERROR    | __main__:main:52- No pmids find
+2026-07-31 01:26:53 |INFO     | __main__:main:53- number of pmids : 0
+2026-07-31 01:27:03 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : lung cancer immunotherapy PD-1
+2026-07-31 01:27:04 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 01:27:04 |INFO     | __main__:main:53- number of pmids : 1
+2026-07-31 01:27:14 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : tumor microenvironment T cells
+2026-07-31 01:27:14 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 01:27:14 |INFO     | __main__:main:53- number of pmids : 1
+2026-07-31 01:27:47 |INFO     | __main__:main:45- 
+── Groupe : oncology ──
+2026-07-31 01:27:47 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-07-31 01:27:48 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 01:27:48 |INFO     | __main__:main:53- number of pmids : 40
+2026-07-31 01:27:58 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : lung cancer immunotherapy PD-1
+2026-07-31 01:28:03 |INFO     | NCBI.pubmed_article:safe_get:61- retry N:3 in 0S
+2026-07-31 01:28:04 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 01:28:04 |INFO     | __main__:main:53- number of pmids : 40
+2026-07-31 01:28:14 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : tumor microenvironment T cells
+2026-07-31 01:28:19 |INFO     | NCBI.pubmed_article:safe_get:61- retry N:3 in 0S
+2026-07-31 01:28:19 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 01:28:19 |INFO     | __main__:main:53- number of pmids : 40
+2026-07-31 01:28:30 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 01:28:30 |Data_GAP | NCBI.pubmed_article:parse_article:140- [skip] PMID 32024970 — 1 erreur(s)
+2026-07-31 01:28:31 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 01:28:31 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 01:28:31 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 01:28:32 |INFO     | NCBI.pubmed_article:save_result:161- 29 article --> article.csv
+2026-07-31 01:28:32 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-07-31 01:28:32 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-07-31 01:28:33 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-07-31 02:11:00 |INFO     | __main__:main:45- 
+── Groupe : oncology ──
+2026-07-31 02:11:00 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-07-31 02:11:01 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:11:01 |INFO     | __main__:main:53- number of pmids : 40
+2026-07-31 02:11:11 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : lung cancer immunotherapy PD-1
+2026-07-31 02:11:12 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:11:12 |INFO     | __main__:main:53- number of pmids : 40
+2026-07-31 02:11:22 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : tumor microenvironment T cells
+2026-07-31 02:11:22 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:11:22 |INFO     | __main__:main:53- number of pmids : 40
+2026-07-31 02:11:33 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:11:34 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:11:34 |Data_GAP | NCBI.pubmed_article:parse_article:140- [skip] PMID 32024970 — 1 erreur(s)
+2026-07-31 02:11:34 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-07-31 02:11:34 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:11:35 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:11:35 |INFO     | NCBI.pubmed_article:save_result:161- 29 article --> article.csv
+2026-07-31 02:11:35 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-07-31 02:11:36 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-07-31 02:20:38 |INFO     | __main__:main:45- 
+── Groupe : oncology ──
+2026-07-31 02:20:38 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-07-31 02:20:39 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:20:39 |INFO     | __main__:main:53- number of pmids : 40
+2026-07-31 02:20:49 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : lung cancer immunotherapy PD-1
+2026-07-31 02:20:50 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:20:50 |INFO     | __main__:main:53- number of pmids : 40
+2026-07-31 02:21:00 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : tumor microenvironment T cells
+2026-07-31 02:21:00 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:21:00 |INFO     | __main__:main:53- number of pmids : 40
+2026-07-31 02:21:11 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:21:12 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:21:12 |Data_GAP | NCBI.pubmed_article:parse_article:140- [skip] PMID 32024970 — 1 erreur(s)
+2026-07-31 02:21:12 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-07-31 02:21:12 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:21:13 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:21:13 |INFO     | NCBI.pubmed_article:save_result:161- 29 article --> article.csv
+2026-07-31 02:21:13 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-07-31 02:21:14 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-07-31 02:21:14 |SUCCESS  | __main__:main:69- gemini analyse starts
+2026-07-31 02:36:20 |INFO     | __main__:main:45- 
+── Groupe : oncology ──
+2026-07-31 02:36:20 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-07-31 02:36:21 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:36:21 |INFO     | __main__:main:53- number of pmids : 40
+2026-07-31 02:36:26 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : lung cancer immunotherapy PD-1
+2026-07-31 02:36:27 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:36:27 |INFO     | __main__:main:53- number of pmids : 40
+2026-07-31 02:36:32 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : tumor microenvironment T cells
+2026-07-31 02:36:33 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:36:33 |INFO     | __main__:main:53- number of pmids : 40
+2026-07-31 02:36:39 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:36:39 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:36:39 |Data_GAP | NCBI.pubmed_article:parse_article:140- [skip] PMID 32024970 — 1 erreur(s)
+2026-07-31 02:36:40 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:36:40 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-07-31 02:36:40 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-07-31 02:36:40 |INFO     | NCBI.pubmed_article:save_result:161- 29 article --> article.csv
+2026-07-31 02:36:41 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-07-31 02:36:41 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-07-31 02:36:41 |SUCCESS  | __main__:main:69- gemini analyse starts
+2026-07-31 02:36:41 |INFO     | NCBI.filtration:analyse_batch:62- Analyse de 10 articles

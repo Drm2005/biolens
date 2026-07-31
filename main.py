@@ -52,7 +52,7 @@ async def main():
                     logger.error("No pmids find")
                 logger.info(f"number of pmids : {len(pmids)}")
                 all_pmids.extend(pmids)
-                await asyncio.sleep(10)
+                await asyncio.sleep(6)
 
             all_pmids = list(dict.fromkeys(all_pmids))
 
@@ -66,28 +66,38 @@ async def main():
                 results = await task
                 save_result(results)
                 save_pmid({a.pmid for a in results})
+            logger.success("gemini analyse starts")
 
-    for df in pd.read_csv(CSV_FILE, encoding="utf-8", sep="|", chunksize=30):
-        df["pmid"] = df["pmid"].astype(str)
+            for df in pd.read_csv(CSV_FILE, encoding="utf-8", sep="|", chunksize=10):
+                df["pmid"] = df["pmid"].astype(str)
+                if "summary" not in df.columns:
+                    df["summary"] = None
+                    df["relevance_score"] = None
+                    df["relevance_justification"] = None
+                    df["mesh_keywords"] = None
 
-        df["summary"] = None
-        df["relevance_score"] = None
-        df["relevance_justification"] = None
-        df["mesh_keywords"] = None
+                parts = analyse_batch(df)
+                logger.success(f"parts end with {len(parts)} analysed")
 
-        parts = analyse_batch(df)
-        logger.info(f"parts end with {len(parts)} analysed")
+                for part in parts:
+                    pmid = part.article_id
+                    mask = df["pmid"] == pmid
+                    df.loc[mask, "summary"] = part.summary
+                    df.loc[mask, "relevance_score"] = part.relevance_score
+                    df.loc[mask, "relevance_justification"] = (
+                        part.relevance_justification
+                    )
+                    df.loc[mask, "mesh_keywords"] = ",".join(part.mesh_keywords)
 
-        for part in parts:
-            pmid = part.article_id
-            mask = df["pmid"] == pmid
-            df.loc[mask, "summary"] = part.summary
-            df.loc[mask, "relevance_score"] = part.relevance_score
-            df.loc[mask, "relevance_justification"] = part.relevance_justification
-            df.loc[mask, "mesh_keywords"] = part.mesh_keywords
-
-            df.to_csv(final_csv, sep="|", encoding="utf-8", index=False)
-            logger.info(f"part with {BATCH} saved in {final_csv}")
+                df.to_csv(
+                    final_csv,
+                    mode="a",
+                    header=not final_csv,
+                    sep="|",
+                    encoding="utf-8",
+                    index=False,
+                )
+                logger.info(f"part with {BATCH} saved in {final_csv}")
 
 
 if __name__ == "__main__":
