@@ -513,3 +513,27 @@
 2026-08-03 01:31:26 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
 2026-08-03 01:31:26 |ERROR    | __main__:main:52- No pmids find
 2026-08-03 01:31:26 |INFO     | __main__:main:53- number of pmids : 0
+2026-08-03 01:31:45 |INFO     | __main__:main:45- 
+── Groupe : oncology ──
+2026-08-03 01:31:45 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-08-03 01:31:45 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-08-03 01:31:45 |INFO     | __main__:main:53- number of pmids : 40
+2026-08-03 01:31:53 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : lung cancer immunotherapy PD-1
+2026-08-03 01:31:54 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-08-03 01:31:54 |INFO     | __main__:main:53- number of pmids : 40
+2026-08-03 01:32:02 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : tumor microenvironment T cells
+2026-08-03 01:32:03 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-08-03 01:32:03 |INFO     | __main__:main:53- number of pmids : 40
+2026-08-03 01:32:14 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-08-03 01:32:15 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-08-03 01:32:15 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-08-03 01:32:16 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-08-03 01:32:16 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-08-03 01:32:17 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-08-03 01:32:17 |Data_GAP | NCBI.pubmed_article:parse_article:140- [skip] PMID 32024970 — 1 erreur(s)
+2026-08-03 01:32:17 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-08-03 01:32:18 |INFO     | NCBI.pubmed_article:save_result:161- 29 article --> article.csv
+2026-08-03 01:32:18 |SUCCESS  | __main__:main:69- gemini analyse starts
+2026-08-03 01:32:18 |INFO     | NCBI.filtration:analyse_batch:87- Analyse de 20 articles with a total of 29417 token
+2026-08-03 01:33:58 |INFO     | NCBI.filtration:analyse_batch:100- analyse start with29417token
+2026-08-03 01:33:58 |INFO     | NCBI.filtration:analyse_batch:87- Analyse de 20 articles with a total of 25797 token
