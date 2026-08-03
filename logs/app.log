@@ -485,3 +485,31 @@
 2026-07-31 03:06:42 |INFO     | __main__:main:100- part with 30 saved in complet_article.csv
 2026-07-31 03:06:42 |INFO     | NCBI.filtration:analyse_batch:63- Analyse de 2 articles with a total of 3340 token
 2026-07-31 03:06:55 |INFO     | NCBI.filtration:analyse_batch:73- analyse start with3340token
+2026-08-03 01:30:28 |INFO     | __main__:main:45- 
+── Groupe : oncology ──
+2026-08-03 01:30:28 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-08-03 01:30:29 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-08-03 01:30:29 |INFO     | __main__:main:53- number of pmids : 40
+2026-08-03 01:30:37 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : lung cancer immunotherapy PD-1
+2026-08-03 01:30:38 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-08-03 01:30:38 |INFO     | __main__:main:53- number of pmids : 40
+2026-08-03 01:30:46 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : tumor microenvironment T cells
+2026-08-03 01:30:46 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-08-03 01:30:46 |INFO     | __main__:main:53- number of pmids : 40
+2026-08-03 01:30:56 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-08-03 01:30:56 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-08-03 01:30:56 |Data_GAP | NCBI.pubmed_article:parse_article:140- [skip] PMID 32024970 — 1 erreur(s)
+2026-08-03 01:30:56 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-08-03 01:30:57 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-08-03 01:30:57 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-08-03 01:30:57 |INFO     | NCBI.pubmed_article:save_result:161- 29 article --> article.csv
+2026-08-03 01:30:58 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-08-03 01:30:58 |INFO     | NCBI.pubmed_article:save_result:161- 30 article --> article.csv
+2026-08-03 01:30:58 |SUCCESS  | __main__:main:69- gemini analyse starts
+2026-08-03 01:30:58 |INFO     | NCBI.filtration:analyse_batch:87- Analyse de 2 articles with a total of 3706 token
+2026-08-03 01:31:25 |INFO     | __main__:main:45- 
+── Groupe : oncology ──
+2026-08-03 01:31:25 |INFO     | NCBI.pubmed_article:search_pmid:73- Debut du scraping pour la query : BRCA1 breast cancer mutation
+2026-08-03 01:31:26 |INFO     | NCBI.pubmed_article:safe_get:55-  réussi | Status: 200
+2026-08-03 01:31:26 |ERROR    | __main__:main:52- No pmids find
+2026-08-03 01:31:26 |INFO     | __main__:main:53- number of pmids : 0

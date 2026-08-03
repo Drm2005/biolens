@@ -68,7 +68,13 @@ async def main():
                 save_pmid({a.pmid for a in results})
             logger.success("gemini analyse starts")
 
-            for df in pd.read_csv(CSV_FILE, encoding="utf-8", sep="|", chunksize=2):
+            async def limit_analyse(df):
+                async with semaphore:
+                    result = await analyse_batch(df)
+                return df, result
+
+            works = []
+            for df in pd.read_csv(CSV_FILE, encoding="utf-8", sep="|", chunksize=20):
                 df["pmid"] = df["pmid"].astype(str)
                 if "summary" not in df.columns:
                     df["summary"] = None
@@ -76,23 +82,23 @@ async def main():
                     df["relevance_justification"] = None
                     df["mesh_keywords"] = None
 
-                parts = analyse_batch(df)
-                logger.success(f"parts end with {len(parts)} analysed")
-
-                for part in parts:
-                    pmid = part.article_id
+                works.append(asyncio.create_task(limit_analyse(df)))
+            for work in asyncio.as_completed(works):
+                df, end_part = await work
+                for par in end_part:
+                    pmid = par.article_id
                     mask = df["pmid"] == pmid
-                    df.loc[mask, "summary"] = part.summary
-                    df.loc[mask, "relevance_score"] = part.relevance_score
+                    df.loc[mask, "summary"] = par.summary
+                    df.loc[mask, "relevance_score"] = par.relevance_score
                     df.loc[mask, "relevance_justification"] = (
-                        part.relevance_justification
+                        par.relevance_justification
                     )
-                    df.loc[mask, "mesh_keywords"] = ",".join(part.mesh_keywords)
+                    df.loc[mask, "mesh_keywords"] = ",".join(par.mesh_keywords)
 
                 df.to_csv(
                     final_csv,
                     mode="a",
-                    header=not final_csv,
+                    header=not Path(final_csv).exists(),
                     sep="|",
                     encoding="utf-8",
                     index=False,
