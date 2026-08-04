@@ -42,7 +42,7 @@ def read_pmid(path=FILE):
 # ─────────────────────────────────────────
 
 
-async def safe_get(client: httpx.AsyncClient, url, params, retry=3, s=10):
+async def safe_get(client: httpx.AsyncClient, url, params, s, retry=3):
     for attempt in range(retry):
         try:
             response = await client.get(url, params=params)
@@ -56,7 +56,7 @@ async def safe_get(client: httpx.AsyncClient, url, params, retry=3, s=10):
             return response
 
         except httpx.TimeoutException:
-            waiting = attempt**s
+            waiting = attempt * s
             await asyncio.sleep(waiting)
             logger.info(f"retry N:{retry} in {waiting}S")
 
@@ -79,7 +79,7 @@ async def search_pmid(
         "sort": "relevance",
     }
 
-    response = await safe_get(client, url=ESEARCH, params=search_pmid_params)
+    response = await safe_get(client, url=ESEARCH, params=search_pmid_params, s=10)
     data = response.json()
     pmids = data["esearchresult"]["idlist"]
     new_pmid = []
@@ -98,7 +98,7 @@ async def fetch_article(client: httpx.AsyncClient, chunk):
         "retmode": "xml",
         "rettype": "abstract",
     }
-    response = await safe_get(client, EFETCH, params=fetch_params)
+    response = await safe_get(client, EFETCH, params=fetch_params, s=20)
     return list(parse_article(response.text))
 
 
@@ -150,6 +150,11 @@ def save_result(result):
 
     file_exist = CSV_FILE.exists()
     df = pd.DataFrame((a.model_dump()) for a in result)
+    if "summary" not in df.columns:
+        df["summary"] = None
+        df["relevance_score"] = None
+        df["relevance_justification"] = None
+        df["mesh_keywords"] = None
     df.to_csv(
         CSV_FILE,
         mode="a",
