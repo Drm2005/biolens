@@ -1,45 +1,62 @@
 # 🔬 biolens
 
-> Async Python pipelines for scientific & biomedical data — from raw API responses to structured, analysis-ready datasets.
+> Async Python pipeline for biomedical literature — from raw NCBI API responses to structured, LLM-analyzed, analysis-ready datasets.
 
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 [![Status](https://img.shields.io/badge/status-active-brightgreen?style=flat-square)]()
 [![uv](https://img.shields.io/badge/package%20manager-uv-blueviolet?style=flat-square)](https://github.com/astral-sh/uv)
 
-A growing collection of asynchronous scraping pipelines targeting open scientific databases (NCBI, Europe PMC, ClinicalTrials…). Built with clean architecture, API rate-limit compliance, and a clear data path toward **BigQuery analytics** and **Neo4j graph exploration**.
+An asynchronous scraping and enrichment pipeline targeting PubMed via the NCBI E-utilities API. Articles are scraped, deduplicated, and enriched with LLM-generated summaries, relevance scores, and MeSH keywords — with a resumable design that tolerates partial failures at every stage. Built as a technical proof-of-concept toward RAG-on-graph implementations (Neo4j/GDS) on scientific literature.
 
 ---
 
 ## 🗺️ Data Architecture
 
 ```
-NCBI API
-   └─→ Async Scraper (httpx + asyncio)
-           └─→ Structured JSON / CSV
-                   ├─→ BigQuery  ──→  Looker Studio  (trends, keyword stats)
-                   └─→ Neo4j             (graph: authors, citations, MeSH terms)
+NCBI API (esearch / efetch)
+   └─→ Async scraper (httpx + asyncio, rate-limited)
+           └─→ article.csv (raw articles: title, abstract, authors, PMID, DOI)
+                   └─→ Gemini structured analysis (summary, relevance score, MeSH keywords)
+                           └─→ complet_article.csv (enriched, analysis-ready dataset)
+                                   ├─→ Neo4j        (graph: authors, MeSH terms, citations)
+                                   └─→ RAG pipeline  (BioLens core use case)
 ```
 
 ---
 
-## 📌 Current Pipelines
+## 📌 Current Pipeline
 
-### `NCBI/` — NCBI E-utilities
+### `NCBI/` — search, fetch, and enrich
 
-#### `pubmed_article.py` — PubMed metadata pipeline
+| Step | File | What it does |
+|---|---|---|
+| Search by keyword | `pubmed_article.py` → `search_pmid` | Queries `esearch`, deduplicates against already-seen PMIDs |
+| Fetch article data | `pubmed_article.py` → `fetch_article` | Queries `efetch`, XML per PMID chunk, retries on `429`/timeout |
+| Parse fields | `pubmed_article.py` → `parse_article` | `parsel` XPath parsing → `title`, `abstract`, `authors`, `pmid`, `doi` (Pydantic-validated) |
+| Analyze with LLM | `filtration.py` → `analyse_batch` | Sends batches to Gemini (Gemma) for summary, relevance score (0–100), MeSH keywords — structured JSON output |
+| Orchestrate | `main.py` | Runs the full pipeline group by group, resumable across restarts |
 
-Queries the [NCBI E-utilities API](https://www.ncbi.nlm.nih.gov/books/NBK25497/) to retrieve and parse biomedical literature at scale.
+**Rate limiting:**
+- NCBI fetch: `asyncio.Semaphore(2)` + 1s delay between requests
+- Gemini analysis: dedicated `asyncio.Semaphore` shared across all batches (not recreated per call)
 
-| Step | Endpoint | Output |
-|------|----------|--------|
-| Search by keyword | `esearch` | List of PMIDs |
-| Fetch article data | `efetch` | XML per PMID |
-| Parse fields | `parsel` | title, abstract, PMID, DOI |
+**Stack:** `httpx` · `asyncio` · `parsel` · `pydantic` · `google-genai` (Gemma) · `pandas` · `loguru`
 
-**Rate limiting:** `asyncio.Semaphore(3)` — NCBI-compliant (≤3 req/sec without API key)
+---
 
-**Stack:** `httpx` · `asyncio` · `parsel`
+## 🧠 Design Decisions
+
+| Choice | Reason |
+|---|---|
+| `httpx.AsyncClient` over `requests` | Native async support — essential for concurrent I/O without blocking |
+| `asyncio.Semaphore` (shared instance) | Caps concurrent requests without serializing everything; must be created once and reused, not recreated per call |
+| Partial-failure-tolerant batching | A single malformed article in a Gemini response no longer discards the whole batch — only the failed article is retried, on a shrinking `remaining` set |
+| `response_schema` + Pydantic validation | `response_schema` constrains generation server-side; Pydantic re-validates client-side as a last line of defense — the two are complementary, not redundant |
+| Resumable via PMID diffing | Progress is tracked by comparing `pmid` sets between the raw and the enriched CSV, not by mutating a "done" flag column — safe to interrupt and restart |
+| `parsel` over `BeautifulSoup` | CSS + XPath support; production scraping standard |
+| `type="xml"` in Selector | Parsel defaults to HTML mode — explicit XML required for E-utilities |
+| `uv` as package manager | Fast, reproducible installs via `pyproject.toml` + `uv.lock` |
 
 ---
 
@@ -49,15 +66,22 @@ Queries the [NCBI E-utilities API](https://www.ncbi.nlm.nih.gov/books/NBK25497/)
 biolens/
 │
 ├── NCBI/
-│   └── pubmed_article.py     # PubMed async pipeline
+│   ├── config.py           # constants: endpoints, headers, batch sizes, query groups
+│   ├── models.py           # Pydantic models (Article, ArticleAnalysis)
+│   ├── pubmed_article.py   # search / fetch / parse (async, rate-limited, retry)
+│   ├── filtration.py       # Gemini batch analysis (summary, score, MeSH), partial-retry logic
+│   └── test.py             # unit tests
 │
-├── action_article.py         # CLI entry point / post-processing actions
-├── .gitignore
-├── .python-version
+├── main.py                 # pipeline orchestration (scrape → enrich → save)
+├── article.csv             # raw scraped articles
+├── complet_article.csv     # enriched output (summary, relevance_score, mesh_keywords)
+├── pmid_list.txt           # seen PMIDs, for dedup across runs
+├── logs/                   # rotating logs (loguru)
+├── data/, experiments/     # scratch space
+├── .env                    # GEMINI_API_KEY
 ├── pyproject.toml
 ├── uv.lock
-├── LICENSE
-└── README.md
+└── LICENSE
 ```
 
 ---
@@ -66,76 +90,61 @@ biolens/
 
 ```bash
 git clone https://github.com/Drm2005/biolens.git
-cd scraper
+cd biolens
+uv sync
 ```
 
-> Using `uv` (recommended):
-> ```bash
-> uv sync
-> ```
-
-> Or with pip:
-> ```bash
-> pip install httpx parsel
-> ```
+Create a `.env` file:
+```
+GEMINI_API_KEY=your_key_here
+```
 
 ---
 
 ## 🚀 Usage
 
-```python
-import asyncio
-from NCBI.pubmed_article import fetch_many
-
-results = asyncio.run(fetch_many(query="CRISPR gene therapy", max_result=10))
-
-for abstract, title, pmid, doi in results:
-    print(f"[{pmid}] {title}")
-    print(f"DOI: {doi}\n")
+```bash
+uv run main.py
 ```
 
----
+The pipeline runs per query group defined in `NCBI/config.py`:
+1. Searches and fetches new PubMed articles (deduplicated against `pmid_list.txt`).
+2. Saves raw results to `article.csv`.
+3. Sends unanalyzed articles (diffed against `complet_article.csv`) to Gemini in batches.
+4. Appends enriched results to `complet_article.csv`.
 
-## 🧠 Design Decisions
-
-| Choice | Reason |
-|---|---|
-| `httpx` over `requests` | Native async support — essential for concurrent I/O |
-| `asyncio.Semaphore(3)` | NCBI rate limit: ≤3 req/sec without API key |
-| `parsel` over `BeautifulSoup` | CSS + XPath support; production scraping standard |
-| `type="xml"` in Selector | Parsel defaults to HTML mode — explicit XML required for E-utilities |
-| Flat functions (current) | Readable at this scale; OOP `BaseScraper` refactor scoped in roadmap |
-| `uv` as package manager | Fast, reproducible installs via `pyproject.toml` + `uv.lock` |
+Safe to interrupt and rerun — already-enriched articles (matched by PMID) are skipped.
 
 ---
 
 ## 🗺️ Roadmap
 
 **Pipeline hardening**
-- [ ] Export to CSV / JSON
-- [ ] Retry logic with `tenacity`
-- [ ] Structured logging with `logger`
-- [ ] Abstract `BaseScraper` class
+- [x] Retry logic with partial-failure recovery (targeted retry on missing/invalid articles only)
+- [x] Structured logging with `loguru`
+- [x] Resumable pipeline via PMID diffing
+- [ ] Unit test coverage for `filtration.py` retry logic (mocked Gemini client)
+- [ ] FastAPI wrapper (`POST /search` + `BackgroundTasks` + job polling) for non-CLI usage
+- [ ] Dockerize
 
-**Analytics layer**
-- [ ] BigQuery ingestion (`google-cloud-bigquery`)
-- [ ] Looker Studio dashboard — publication trends, keyword co-occurrence
-- [ ] Neo4j graph 
+**Analytics / RAG layer**
+- [ ] Neo4j ingestion (GDS-ready graph: authors, MeSH terms, co-citations)
+- [ ] RAG-on-graph query layer — the actual sellable deliverable, with BioLens as proof-of-concept
+- [ ] BigQuery ingestion for trend analytics (secondary priority)
 
 **New sources** *(NCBI-first, then expanding)*
-- [ ] NCBI SRA — sequencing experiment metadata
-- [ ] ClinicalTrials.gov
 - [ ] Europe PMC / bioRxiv
+- [ ] ClinicalTrials.gov
 
 ---
 
 ## 👤 Author
 
-Built by **Daid** — L3 Biotechnology (USTHB), building at the intersection of data engineering and biomedical research.
+Built by **Daid** — Biotechnology graduate (USTHB), building at the intersection of data engineering, biology, and applied LLM/graph pipelines.
 
 - 🧬 Background: pharmacology · genomics · bioinformatics
-- 🎯 Focus: async pipelines · BigQuery · graph databases · scientific data
-- 📍 Targeting roles in QC / data science — pharma-biotech (FR/CH)
+- 🎯 Focus: async data pipelines · RAG-on-graph · Neo4j · applied LLM structured extraction
+- 📍 Targeting: Master BIBS-IA (Paris-Saclay) · hybrid data/AI engineering roles
 
 ---
 
