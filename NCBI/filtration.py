@@ -84,8 +84,8 @@ async def analyse_batch(batch: pd.DataFrame) -> list[ArticleAnalysis]:
     logger.info(f"Analyse de {len(batch)} articles with a total of {len(prompt)} token")
 
     try:
-        response = client.models.generate_content(
-            model="gemma-4-31b-it",
+        response = await client.aio.models.generate_content(
+            model="gemini-3.5-flash-lite",
             contents=prompt,
             config=types.GenerateContentConfig(
                 temperature=0,
@@ -97,7 +97,7 @@ async def analyse_batch(batch: pd.DataFrame) -> list[ArticleAnalysis]:
         )
 
         if not response.text:
-            raise ValueError("emplty response")
+            raise ValueError("empty response")
 
         raw_results = json.loads(response.text)
 
@@ -106,7 +106,9 @@ async def analyse_batch(batch: pd.DataFrame) -> list[ArticleAnalysis]:
             try:
                 results.append(ArticleAnalysis.model_validate(r))
             except ValidationError as e:
-                pmid = r.get("article_id", "inconnu")
+                pmid = (
+                    r.get("article_id", "inconnu") if isinstance(r, dict) else "inconnu"
+                )
                 logger.warning(f"Article {pmid} invalide, ignoré : {e}")
 
         valid_result = [r for r in results if r.summary]
