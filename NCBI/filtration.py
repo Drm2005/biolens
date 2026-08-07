@@ -26,7 +26,7 @@ if not api_key:
 client = genai.Client(api_key=api_key)
 
 
-async def analyse_batch(batch: pd.DataFrame) -> list[ArticleAnalysis]:
+async def analyse_batch(batch: pd.DataFrame, query) -> list[ArticleAnalysis]:
     """
     Analyse plusieurs abstracts dans une seule requête API.
     """
@@ -44,8 +44,7 @@ async def analyse_batch(batch: pd.DataFrame) -> list[ArticleAnalysis]:
     prompt = f"""
     Tu es un expert en biologie, pharmacologie et indexation MeSH.
 
-    THÈME :
-    [INSÈRE TON THÈME]
+    THÈME : {query}
 
     Analyse chaque article indépendamment en utilisant uniquement les informations de son abstract.
 

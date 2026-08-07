@@ -38,15 +38,16 @@ async def main():
         await asyncio.sleep(1)
         return result
 
-    async def limit_analyse(df):
+    async def limit_analyse(df, query):
         async with analyse_semaphore:
-            result = await analyse_batch(df)
+            result = await analyse_batch(df, query)
         logger.success(f"Analyse finished : {len(df)} articles")
         return df, result
 
     for group, queries in QUERY_GROUPS.items():
         logger.info(f"\n── Groupe : {group} ──")
         all_pmids = []
+        pmid_to_query = {}
 
         async with httpx.AsyncClient(headers=HEADERS) as client:
             for query in queries:
@@ -54,6 +55,10 @@ async def main():
                 if not pmids:
                     logger.error("No pmids found")
                 logger.info(f"number of pmids : {len(pmids)}")
+
+                for pmid in pmids:
+                    pmid_to_query[pmid] = query
+
                 all_pmids.extend(pmids)
                 await asyncio.sleep(8)
 
@@ -67,6 +72,8 @@ async def main():
 
             for task in asyncio.as_completed(tasks):
                 results = await task
+                for article in results:
+                    article.query = pmid_to_query.get(article.pmid)
                 save_result(results)
                 save_pmid({a.pmid for a in results})
 
@@ -83,39 +90,42 @@ async def main():
         df = df[~df["pmid"].isin(check_pmid)]
         if df.empty:
             break
-        df["pmid"] = df["pmid"].astype(str)
+        df_queries = df["query"].dropna().unique().tolist()
+        for query in df_queries:
+            df_querie = df[df["query"] == query].copy()
+            works = [
+                asyncio.create_task(
+                    limit_analyse(df_querie.iloc[i : i + 60].copy(), query)
+                )
+                for i in range(0, len(df_querie), 60)
+            ]
 
-        works = [
-            asyncio.create_task(limit_analyse(df.iloc[i : i + 60].copy()))
-            for i in range(0, len(df), 60)
-        ]
+            for work in asyncio.as_completed(works):
+                try:
+                    df_chunk, results = await work
+                    df_chunk["summary"] = None
+                    if "relevance_score" not in df_chunk:
+                        df_chunk["relevance_score"] = None
+                    df_chunk["mesh_keywords"] = None
+                except Exception as e:
+                    logger.exception(e)
+                    continue
+                for par in results:
+                    mask = df_chunk["pmid"] == par.article_id
+                    df_chunk.loc[mask, "summary"] = par.summary
+                    df_chunk.loc[mask, "relevance_score"] = par.relevance_score
+                    df_chunk.loc[mask, "mesh_keywords"] = ",".join(par.mesh_keywords)
 
-        for work in asyncio.as_completed(works):
-            try:
-                df_chunk, results = await work
-                df_chunk["summary"] = None
-                if "relevance_score" not in df_chunk:
-                    df_chunk["relevance_score"] = None
-                df_chunk["mesh_keywords"] = None
-            except Exception as e:
-                logger.exception(e)
-                continue
-            for par in results:
-                mask = df_chunk["pmid"] == par.article_id
-                df_chunk.loc[mask, "summary"] = par.summary
-                df_chunk.loc[mask, "relevance_score"] = par.relevance_score
-                df_chunk.loc[mask, "mesh_keywords"] = ",".join(par.mesh_keywords)
-
-            df_chunk = df_chunk[df_chunk["summary"].notnull()]
-            df_chunk.to_csv(
-                final_csv,
-                mode="a",
-                header=not Path(final_csv).exists(),
-                sep="|",
-                encoding="utf-8",
-                index=False,
-            )
-    logger.info(f"part saved in {final_csv}")
+                df_chunk = df_chunk[df_chunk["summary"].notnull()]
+                df_chunk.to_csv(
+                    final_csv,
+                    mode="a",
+                    header=not Path(final_csv).exists(),
+                    sep="|",
+                    encoding="utf-8",
+                    index=False,
+                )
+        logger.info(f"part saved in {final_csv}")
 
 
 if __name__ == "__main__":

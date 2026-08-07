@@ -7,6 +7,7 @@ class Article(BaseModel):
     authors: list[str] = Field(default_factory=list)
     pmid: str  # PMID reste str (c'est un ID, pas un nombre à calculer)
     doi: str | None = None
+    query: str | None = None
 
     @field_validator("title", "abstract", "pmid", "doi", mode="before")
     @classmethod
