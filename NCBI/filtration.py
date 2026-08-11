@@ -7,15 +7,9 @@ from google import genai
 from google.genai import types
 from google.genai.errors import ServerError
 from loguru import logger
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import ValidationError
 
-
-class ArticleAnalysis(BaseModel):
-    article_id: str
-    summary: str
-    relevance_score: int = Field(ge=0, le=100)
-    mesh_keywords: list[str]
-
+from NCBI.models import ArticleAnalysis
 
 load_dotenv()
 
@@ -42,44 +36,74 @@ async def analyse_batch(batch: pd.DataFrame, query) -> list[ArticleAnalysis]:
     )
 
     prompt = f"""
-    Tu es un expert en biologie, pharmacologie et indexation MeSH.
+    Tu es expert en biologie moléculaire, génétique et pharmacologie.
 
-    THÈME : {query}
+    THÈME DE RECHERCHE : {query}
 
-    Analyse chaque article indépendamment en utilisant uniquement les informations de son abstract.
+    Analyse chaque article indépendamment, en utilisant EXCLUSIVEMENT les informations présentes dans son abstract.
 
-    Pour chaque ARTICLE_ID :
+    Pour chaque article :
 
-    - produire un résumé scientifique fidèle ;
-    - attribuer un score de pertinence entier entre 0 et 100 ;
-    - extraire les principaux termes MeSH officiels lorsqu'ils existent ;
-    - ne jamais inventer d'information.
+    1. RÉSUMÉ
+    - Résume fidèlement les résultats et objectifs principaux.
+    - N'ajoute aucune information absente de l'abstract.
 
-    RÈGLES OBLIGATOIRES :
+    2. PERTINENCE
+    - Attribue un score entier de 0 à 100 selon la pertinence de l'article par rapport au thème.
+    - 0 = aucune pertinence ; 100 = directement pertinent.
 
-    - répondre UNIQUEMENT avec un tableau JSON valide ;
-    - un objet par ARTICLE_ID ;
-    - conserver exactement l'ARTICLE_ID fourni ;
-    - respecter exactement les noms des champs ;
-    - ne retourner aucun texte avant ou après le JSON ;
-    - ne retourner aucun Markdown ;
-    - ne jamais utiliser ```json.
+    3. ENTITÉS
+    Extrais uniquement les entités explicitement mentionnées :
+    - genes : symboles/noms de gènes explicitement cités ;
+    - proteins : protéines explicitement citées ;
+    - drugs : médicaments ou molécules explicitement cités.
 
-    Format attendu :
+    4. RELATIONS
+    Extrais uniquement les relations explicitement établies dans l'abstract entre les entités extraites.
+    Types possibles :
+    - gene-disease
+    - drug-disease
+    - gene-protein
+    - drug-protein
+    - gene-drug
+    - protein-disease
 
+    N'infère aucune relation à partir de connaissances externes.
+    Une entité ou une relation non explicitement présente dans l'abstract ne doit jamais être ajoutée.
+
+    RÈGLES DE SORTIE :
+    - Retourne uniquement un JSON valide.
+    - Un objet par article.
+    - Conserve exactement chaque article_id fourni.
+    - Respecte exactement les noms et types des champs.
+    - genes, proteins, drugs et relations doivent toujours être des listes.
+    - Si aucune entité ou relation n'est trouvée, retourne [].
+    - relevance_score doit être un entier entre 0 et 100.
+    - Aucun Markdown, commentaire ou texte hors JSON.
+
+    STRUCTURE :
     [
-    {{
-        "article_id": "...",
-        "summary": "...",
-        "relevance_score": 0,
-        "mesh_keywords": ["..."]
-    }}
+        {{
+            "article_id": "...",
+            "summary": "...",
+            "relevance_score": 0,
+            "genes": [],
+            "proteins": [],
+            "drugs": [],
+            "relations": [
+                {{
+                    "entity_1": "...",
+                    "entity_2": "...",
+                    "relation_type": "..."
+                }}
+            ]
+        }}
     ]
 
     ARTICLES :
-
     {articles_text}
     """
+
     logger.info(f"Analyse de {len(batch)} articles with a total of {len(prompt)} token")
 
     try:
@@ -114,8 +138,6 @@ async def analyse_batch(batch: pd.DataFrame, query) -> list[ArticleAnalysis]:
         for r in results:
             if not r.summary:
                 logger.warning(f"Résumé vide pour {r.article_id}, retry prévu")
-            if not r.mesh_keywords:
-                logger.warning(f"Mots-clés MeSH vides pour {r.article_id}")
 
         return valid_result
     except ServerError as e:

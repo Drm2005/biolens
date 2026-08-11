@@ -81,6 +81,7 @@ async def search_pmid(
 
     response = await safe_get(client, url=ESEARCH, params=search_pmid_params, s=10)
     data = response.json()
+
     pmids = data["esearchresult"]["idlist"]
     new_pmid = []
     for pmid in pmids:
@@ -98,7 +99,7 @@ async def fetch_article(client: httpx.AsyncClient, chunk):
         "retmode": "xml",
         "rettype": "abstract",
     }
-    response = await safe_get(client, EFETCH, params=fetch_params, s=20)
+    response = await safe_get(client, EFETCH, params=fetch_params, s=30)
     return list(parse_article(response.text))
 
 
@@ -124,6 +125,7 @@ def parse_article(response: str):
         )
         pmid: str | None = art.xpath(".//PMID/text()").get("N/A")
         doi = art.xpath(".//ArticleId[@IdType='doi']/text()").get()
+        key_word = art.xpath("..//Keyword/text()").getall()
 
         try:
             article = Article(
@@ -132,6 +134,7 @@ def parse_article(response: str):
                 authors=authors_list,
                 pmid=pmid,
                 doi=doi,
+                key_word=key_word,
             )
             yield article
 
@@ -153,8 +156,11 @@ def save_result(result):
     if "summary" not in df.columns:
         df["summary"] = None
         df["relevance_score"] = None
-        df["relevance_justification"] = None
-        df["mesh_keywords"] = None
+        df["genes"] = None
+        df["proteins"] = None
+        df["drugs"] = None
+        df["relations"] = None
+
     df.to_csv(
         CSV_FILE,
         mode="a",
