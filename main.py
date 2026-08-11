@@ -220,13 +220,13 @@ async def main():
     logger.success(
         "\n"
         "══════════════════════════════════════\n"
-        "           PROGRAMME TERMINÉ\n"
+        "           PROGRAM COMPLETED\n"
         "══════════════════════════════════════\n"
-        f"PMIDs trouvés       : {total_pmids}\n"
-        f"Articles récupérés  : {total_articles_fetched}\n"
-        f"Articles analysés   : {total_articles_analysed}\n"
-        f"Temps total         : {elapsed_time:.2f} secondes\n"
-        f"Temps total         : {elapsed_time / 60:.2f} minutes\n"
+        f"PMIDs found       : {total_pmids}\n"
+        f"Articles retrieved  : {total_articles_fetched}\n"
+        f"Articles analysed   : {total_articles_analysed}\n"
+        f"Total time         : {elapsed_time:.2f} seconds\n"
+        f"Total time          : {elapsed_time / 60:.2f} minutes\n"
         "══════════════════════════════════════"
     )
 

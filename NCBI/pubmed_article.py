@@ -58,11 +58,16 @@ async def safe_get(client: httpx.AsyncClient, url, params, s, retry=3):
         except httpx.TimeoutException:
             waiting = attempt * s
             await asyncio.sleep(waiting)
-            logger.info(f"retry N:{retry} in {waiting}S")
+            logger.warning(f"retry N:{retry} in {waiting}S")
 
         except httpx.HTTPStatusError as e:
             logger.error(f"Erreur HTTP {e.response.status_code} sur {url}")
-            raise  # erreurs 4xx/5xx autres que 429 : pas la peine de réessayer
+            if e.response.status_code == 429:
+                waiting = attempt * s
+                await asyncio.sleep(waiting)
+                logger.warning(f"retry N:{retry} in {waiting}S")
+            else:
+                raise  # erreurs 4xx/5xx autres que 429 : pas la peine de réessayer
 
     raise RuntimeError(f"Échec après {retry} tentatives : {url}")
 
@@ -99,7 +104,7 @@ async def fetch_article(client: httpx.AsyncClient, chunk):
         "retmode": "xml",
         "rettype": "abstract",
     }
-    response = await safe_get(client, EFETCH, params=fetch_params, s=30)
+    response = await safe_get(client, EFETCH, params=fetch_params, s=10)
     return list(parse_article(response.text))
 
 
