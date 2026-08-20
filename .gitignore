@@ -21,6 +21,7 @@ data/
 *.json
 *.ipynb
 *.txt
+*.pdf
 # Files
 experiments/
 
